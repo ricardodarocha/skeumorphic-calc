@@ -2,6 +2,9 @@ class CalcController{
 
 constructor(){
 
+    this._lastOperator = '';
+    this._lastNumber = '';
+
     this._operation = [];
     this._locale = 'pt-BR';
     this._displayCalcEl = document.querySelector("#display");
@@ -21,7 +24,9 @@ initialize(){
 
         this.setDisplayDateTime();
 
-    }, 1000)
+    }, 1000);
+
+    this.setLastNumberToDisplay();
     
 }
 
@@ -38,11 +43,15 @@ clearAll(){
 
 this._operation = [];
 
+this.setLastNumberToDisplay();
+
 }
 
 clearEntry(){
 
     this._operation.pop();
+
+    this.setLastNumberToDisplay();
 
 }
 
@@ -71,15 +80,63 @@ pushOperation(value){
     }
 }
 
+getResult(){
+
+    return eval(this._operation.join(""));
+}
+
 calc(){
 
-    let last = this._operation.pop();
+    let last = '';
 
-    let result = eval(this._operation.join(""));
+    if(this._operation.length > 3){
+        last = this._operation.pop();
 
-    this._operation = [result, last ];
+
+
+        this._lastNumber = this.getResult();
+
+    }
+
+    let result = this.getResult();
+
+    if (last == '%'){
+
+        result /= 100;
+
+        this._operation = [result];
+
+    }else{
+
+    this._operation = [result];
+
+        if(last){ this._operation.push(last);
+
+        }
+
+    }
+
+    
 
     this.setLastNumberToDisplay();
+}
+
+getLastItem(isOperator = true){
+
+    let lastItem;
+
+    for(let i = this._operation.length-1; i >= 0; i--){
+
+        if (this.isOperator(this._operation[i] == isOperator)){
+
+            lastItem = this._operation[i];
+            break;
+        }
+
+    
+    }
+
+    return lastItem;
 }
 
 setLastNumberToDisplay(){
@@ -94,6 +151,8 @@ setLastNumberToDisplay(){
             break;
         }
     }
+
+    if(!lastNumber) lastNumber = 0;
 
     this.displayCalc = lastNumber;
 }
@@ -147,6 +206,7 @@ execBtn(value) {
 
         case 'ac':
             this.clearAll();
+
             break;
 
         case 'ce':
@@ -175,6 +235,7 @@ execBtn(value) {
 
         case 'igual':
                    
+        this.calc();
             break;
 
         case 'ponto':
