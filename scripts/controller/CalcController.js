@@ -20,7 +20,7 @@ initialize(){
 
     this.setDisplayDateTime();
 
-    let interval = setInterval(()=>{
+    setInterval(()=>{
 
         this.setDisplayDateTime();
 
@@ -67,7 +67,7 @@ setLastOperation(value){
 
 isOperator(value){
 
-    return (['+', '-', '*', '/', '.', '%'].indexOf(value) > -1);
+    return (['+', '-', '*', '/', '%'].indexOf(value) > -1);
 }
 
 pushOperation(value){
@@ -82,21 +82,38 @@ pushOperation(value){
 
 getResult(){
 
-    return eval(this._operation.join(""));
+    return eval(this._operation.join(''));
 }
 
 calc(){
 
     let last = '';
 
+    this._lastOperator = this.getLastItem(true);
+
+    if(this._operation.length <3){
+        console.log('Lenght < 3' + this._operation);
+        let firstItem = this._operation[0];
+        this._operation = [firstItem, this._lastOperator, this._lastNumber];
+    }
+
     if(this._operation.length > 3){
+
         last = this._operation.pop();
-
-
 
         this._lastNumber = this.getResult();
 
     }
+
+    else if(this._operation.length == 3){
+
+        
+        this._lastNumber = this.getLastItem(false);
+    }
+
+    console.log('_lastOperator', this._lastOperator);
+
+    console.log('_lastNumber', this._lastNumber);
 
     let result = this.getResult();
 
@@ -110,15 +127,12 @@ calc(){
 
     this._operation = [result];
 
-        if(last){ this._operation.push(last);
-
-        }
+        if(last) this._operation.push(last);
 
     }
 
-    
-
     this.setLastNumberToDisplay();
+
 }
 
 getLastItem(isOperator = true){
@@ -127,7 +141,7 @@ getLastItem(isOperator = true){
 
     for(let i = this._operation.length-1; i >= 0; i--){
 
-        if (this.isOperator(this._operation[i] == isOperator)){
+        if (this.isOperator(this._operation[i]) == isOperator){
 
             lastItem = this._operation[i];
             break;
@@ -136,21 +150,17 @@ getLastItem(isOperator = true){
     
     }
 
+    if(!lastItem){
+
+        lastItem = (isOperator) ? this._lastOperator : this._lastNumber;
+    }
+
     return lastItem;
 }
 
 setLastNumberToDisplay(){
 
-    let lastNumber;
-
-    for(let i = this._operation.length-1; i >= 0; i--){
-
-        if (!this.isOperator(this._operation[i])){
-
-            lastNumber = this._operation[i];
-            break;
-        }
-    }
+    let lastNumber = this.getLastItem(false);
 
     if(!lastNumber) lastNumber = 0;
 
@@ -160,15 +170,15 @@ setLastNumberToDisplay(){
 addOperation(value){
 
     if (isNaN(this.getLastOperation() )){
-        //String
+    
 
         if(this.isOperator(value)){
-            //trocar o operador
+            
             this.setLastOperation(value);
 
         }else if(isNaN(value)){
 
-            console.log('Outra coisa',   value);
+            console.log("Outra coisa",value);
 
         } else{
 
@@ -293,8 +303,9 @@ initButtonsEvents(){
 }
 
 setDisplayDateTime(){
+    this._currentDate = new Date();  // Atualize a data para garantir que a hora e a data estejam corretas
     this.displayDate = this.currentDate.toLocaleDateString(this._locale);
-        this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
+    this.displayTime = this.currentDate.toLocaleTimeString(this._locale);
 }
 
 get displayTime(){
