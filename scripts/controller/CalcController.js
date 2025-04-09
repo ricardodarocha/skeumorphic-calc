@@ -58,11 +58,13 @@ initialize(){
     this.setLastNumberToDisplay();
     this.pasteFromClipboard();
 
-    document.querySelectorAll('btn-ac').forEach(btn=>{
+    document.querySelectorAll('.btn-ac').forEach(btn=>{
 
-        btn.addEventListener('dbclick', e=>{
+        btn.addEventListener('dblclick', e=>{
 
             this.toggleAudio();
+
+            this.playAudio();
         });
 
 
@@ -79,6 +81,7 @@ playAudio(){
 
     if(this._audioOnOff){
 
+        this._audio.currentTime = 0;
         this._audio.play();
     }
 
@@ -88,7 +91,8 @@ initKeyboard(){
 
     document.addEventListener('keyup', e=>{
 
-     
+     this.playAudio();
+
     switch (e.key){
 
         case 'Escape':
@@ -339,6 +343,8 @@ addDot(){
 }
 
 execBtn(value) {
+
+    this.playAudio();
 
     switch (value){
 
